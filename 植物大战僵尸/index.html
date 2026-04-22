@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Plants vs Zombies</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <h1>Mini Plants vs Zombies</h1>
+      <div class="stats">
+        <span>Sun: <strong id="sun-count">150</strong></span>
+        <span>Score: <strong id="score-count">0</strong></span>
+        <span>Time: <strong id="time-count">0</strong>s</span>
+        <span>Lives: <strong id="life-count">3</strong></span>
+      </div>
+    </header>
+
+    <section class="shop" aria-label="Plant shop">
+      <button class="card" data-plant="sunflower">
+        <span>Sunflower</span>
+        <small>50 Sun</small>
+      </button>
+      <button class="card" data-plant="peashooter">
+        <span>Peashooter</span>
+        <small>100 Sun</small>
+      </button>
+      <button class="card" data-plant="wallnut">
+        <span>Wallnut</span>
+        <small>75 Sun</small>
+      </button>
+      <button id="clear-selection" class="card utility">
+        <span>Clear</span>
+        <small>Cancel selection</small>
+      </button>
+    </section>
+
+    <p id="status-line" class="status">Choose a plant card, then click a tile to place it.</p>
+
+    <main class="board-wrapper">
+      <div id="board" class="board" role="grid" aria-label="Game board"></div>
+      <div id="entity-layer">
+        <div id="plant-layer"></div>
+        <div id="projectile-layer"></div>
+        <div id="zombie-layer"></div>
+        <div id="sun-layer"></div>
+      </div>
+    </main>
+
+    <footer class="actions">
+      <button id="restart-btn">Restart Game</button>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
