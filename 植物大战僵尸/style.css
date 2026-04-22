@@ -1,0 +1,528 @@
+:root {
+  --rows: 5;
+  --cols: 9;
+  --cell-w: 96px;
+  --cell-h: 92px;
+  --board-w: calc(var(--cols) * var(--cell-w));
+  --board-h: calc(var(--rows) * var(--cell-h));
+  --bg-a: #f4f9eb;
+  --bg-b: #dbeec3;
+  --line: rgba(39, 87, 33, 0.2);
+  --text: #1a2d0f;
+  --muted: #4d6d40;
+  --accent: #2f7d32;
+  --danger: #9d2718;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: var(--text);
+  background: radial-gradient(circle at top, #f5f7e8, #dfe9c8 45%, #cde1aa);
+}
+
+.app {
+  max-width: 980px;
+  margin: 18px auto 24px;
+  padding: 12px;
+}
+
+.topbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 26px;
+  letter-spacing: 0.3px;
+}
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.loadout-panel {
+  margin-top: 12px;
+  border: 1px solid #8db967;
+  border-radius: 12px;
+  padding: 10px;
+  background: linear-gradient(180deg, rgba(245, 252, 232, 0.95), rgba(228, 243, 204, 0.95));
+}
+
+.loadout-panel h2 {
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+
+.loadout-panel p {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #46653b;
+}
+
+.plant-pool {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.loadout-actions {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+#loadout-count {
+  font-size: 13px;
+  color: #315527;
+  font-weight: 700;
+}
+
+#start-battle-btn {
+  border: 0;
+  border-radius: 10px;
+  background: #2d7b30;
+  color: #fff;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+#start-battle-btn:hover {
+  filter: brightness(1.06);
+}
+
+#start-battle-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.app.in-battle .loadout-panel {
+  display: none;
+}
+
+.app:not(.in-battle) .shop,
+.app:not(.in-battle) .status,
+.app:not(.in-battle) .howto,
+.app:not(.in-battle) .board-wrapper,
+.app:not(.in-battle) .actions {
+  display: none;
+}
+
+.shop {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.shop-cards {
+  display: contents;
+}
+
+.card {
+  border: 1px solid #86ad62;
+  background: linear-gradient(180deg, #eff8df, #d8ecbd);
+  border-radius: 10px;
+  padding: 8px 10px;
+  text-align: left;
+  color: #1e3a17;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  grid-template-areas:
+    "icon title"
+    "icon cost";
+  align-items: center;
+  column-gap: 8px;
+}
+
+.card-icon {
+  grid-area: icon;
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+.card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 79, 23, 0.18);
+}
+
+.card.active {
+  border-color: #2d7d37;
+  box-shadow: 0 0 0 2px rgba(45, 125, 55, 0.22);
+}
+
+.card.disabled {
+  opacity: 0.45;
+}
+
+.card span {
+  grid-area: title;
+  display: block;
+  font-weight: 700;
+}
+
+.card small {
+  grid-area: cost;
+  color: #4b6d40;
+}
+
+.card.utility {
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "title"
+    "cost";
+  background: linear-gradient(180deg, #f7f8f1, #e8edd8);
+}
+
+.status {
+  min-height: 24px;
+  margin: 10px 2px 6px;
+  color: #35592b;
+}
+
+.status.bad {
+  color: var(--danger);
+}
+
+.howto {
+  margin: 0 2px 10px;
+  padding: 8px 10px;
+  border: 1px solid rgba(73, 127, 59, 0.28);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.4);
+  color: #2c4d22;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.howto strong {
+  margin-right: 6px;
+}
+
+.board-wrapper {
+  position: relative;
+  width: var(--board-w);
+  height: var(--board-h);
+  border-radius: 14px;
+  overflow: hidden;
+  border: 2px solid #8eb56d;
+  box-shadow: 0 12px 22px rgba(39, 70, 27, 0.16);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0)),
+    repeating-linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.04) 0,
+      rgba(255, 255, 255, 0.04) calc(var(--cell-h) - 1px),
+      rgba(0, 0, 0, 0.06) calc(var(--cell-h) - 1px),
+      rgba(0, 0, 0, 0.06) var(--cell-h)
+    ),
+    linear-gradient(90deg, var(--bg-a), var(--bg-b));
+}
+
+.board {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.tile {
+  position: absolute;
+  border: 1px solid var(--line);
+  background: transparent;
+  cursor: pointer;
+}
+
+.tile:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+#entity-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+#mower-layer,
+#plant-layer,
+#projectile-layer,
+#zombie-layer,
+#sun-layer {
+  position: absolute;
+  inset: 0;
+}
+
+#mower-layer {
+  z-index: 10;
+}
+
+#plant-layer {
+  z-index: 20;
+}
+
+#projectile-layer {
+  z-index: 30;
+}
+
+#zombie-layer {
+  z-index: 40;
+}
+
+#sun-layer {
+  z-index: 50;
+  pointer-events: none;
+}
+
+.plant,
+.zombie,
+.pea,
+.sun,
+.mower {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+.plant,
+.zombie {
+  border: 2px solid rgba(0, 0, 0, 0.18);
+  border-radius: 14px;
+  width: 72px;
+  height: 82px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  text-align: center;
+}
+
+.plant {
+  background: linear-gradient(180deg, rgba(241, 255, 225, 0.96), rgba(187, 228, 143, 0.92));
+}
+
+.plant.wallnut {
+  background: linear-gradient(180deg, rgba(247, 228, 194, 0.97), rgba(214, 171, 116, 0.93));
+}
+
+.zombie {
+  background: linear-gradient(180deg, rgba(216, 224, 218, 0.95), rgba(162, 172, 165, 0.93));
+}
+
+.zombie.conehead {
+  border-color: rgba(132, 83, 27, 0.45);
+}
+
+.zombie.buckethead {
+  border-color: rgba(52, 61, 73, 0.45);
+}
+
+.zombie.attack {
+  filter: saturate(1.25);
+}
+
+.entity-icon {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.entity-name {
+  max-width: 64px;
+  font-size: 10px;
+  line-height: 1.1;
+  font-weight: 700;
+  color: #17320f;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.42);
+}
+
+.hp-bar {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  width: 60px;
+  height: 5px;
+  transform: translateX(-50%);
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.16);
+  overflow: hidden;
+}
+
+.hp-bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #6cd83f, #2f9f2e);
+}
+
+.mower {
+  width: 76px;
+  height: 56px;
+}
+
+.mower-icon {
+  width: 70px;
+  height: 46px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.18));
+}
+
+.mower.moving .mower-icon {
+  animation: mower-roll 260ms linear infinite;
+}
+
+@keyframes mower-roll {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.pea {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #befc99, #4db84b);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.pea.snow {
+  background: radial-gradient(circle at 30% 30%, #e6fcff, #75bde8);
+}
+
+.sun {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.14);
+  background: radial-gradient(circle at 35% 35%, #fff6b8, #ffca39);
+  color: #5d4300;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  cursor: pointer;
+  pointer-events: auto;
+  animation: pulse 1.8s infinite;
+  font-weight: 700;
+  box-shadow: 0 3px 8px rgba(125, 91, 10, 0.24);
+}
+
+.plant.potatomine {
+  background: linear-gradient(180deg, rgba(229, 236, 167, 0.97), rgba(169, 193, 87, 0.93));
+}
+
+.plant.cherrybomb {
+  background: linear-gradient(180deg, rgba(255, 205, 205, 0.97), rgba(241, 121, 121, 0.93));
+}
+
+.zombie.flag {
+  border-color: rgba(149, 26, 26, 0.42);
+}
+
+.zombie.newspaper {
+  border-color: rgba(60, 66, 70, 0.42);
+}
+
+.zombie.newspaper.enraged {
+  filter: saturate(1.3);
+}
+
+.zombie.screendoor {
+  border-color: rgba(80, 95, 112, 0.44);
+}
+
+.zombie.football {
+  border-color: rgba(112, 33, 33, 0.45);
+}
+
+.sun-core {
+  font-size: 10px;
+  letter-spacing: 0.6px;
+  line-height: 1;
+}
+
+.sun-value {
+  font-size: 10px;
+  line-height: 1;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.07);
+  }
+}
+
+.actions {
+  margin-top: 12px;
+}
+
+#restart-btn {
+  border: 0;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fff;
+  padding: 10px 14px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#restart-btn:hover {
+  filter: brightness(1.05);
+}
+
+@media (max-width: 1020px) {
+  .app {
+    margin: 8px auto 16px;
+    padding: 8px;
+  }
+
+  .shop {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .plant-pool {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .board-wrapper {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 9 / 5;
+  }
+
+  .board,
+  #entity-layer {
+    width: 100%;
+    height: 100%;
+  }
+}
